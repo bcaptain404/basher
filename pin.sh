@@ -15,11 +15,14 @@ Examples:
   pin -- ls -l                # Pins a raw command (alternative form)
   pin -n 3                    # Pins line 3 of .bash_history
   pin -n 3 -m "List files"    # Pins line 3 with comment
-  pin -n 70-80                # Pins line 70 through 80 from history
+  pin -n 70-80                # Pins lines 70 through 80 from history
   pin -s "foo"                # egrep -ni pins for 'foo'
   pin -l                      # List all pinned commands
   pin -u 15                   # Unpin line 15
   pin -u 15-17                # Unpin lines 15 through 17
+  pin -c 15                   # Copy line 15 to clipboard (requires xclip)
+  pin -e 15                   # Expand line 15 into an interactive shell prompt
+  pin --run 15                # Execute line 15 immediately
 EOF
 }
 
@@ -90,6 +93,44 @@ while [[ $# -gt 0 ]]; do
         CMD=$(sed -n "${i}p" "$HIST_FILE")
         [[ -n "$CMD" ]] && add_pin "$CMD $COMMENT"
       done
+      exit 0
+      ;;
+    -c)
+      shift
+      LINE_NUM="$1"
+      CMD=$(sed -n "${LINE_NUM}p" "$PINS_FILE")
+      if [[ -z "$CMD" ]]; then
+        echo "No command found on line $LINE_NUM."
+        exit 1
+      fi
+      echo "$CMD" | xclip -selection clipboard   # or `wl-copy` or `pbcopy` depending on system
+      echo "Copied line $LINE_NUM to clipboard:"
+      echo "$CMD"
+      exit 0
+      ;;
+    -e)
+      shift
+      LINE_NUM="$1"
+      CMD=$(sed -n "${LINE_NUM}p" "$PINS_FILE")
+      if [[ -z "$CMD" ]]; then
+        echo "No command found on line $LINE_NUM."
+        exit 1
+      fi
+
+      # Use a temp file for preloading input
+      TMP_INPUT=$(mktemp)
+      echo "$CMD" > "$TMP_INPUT"
+
+      # This works by preloading the command into readline history
+      bash --rcfile <(
+        echo "
+          HISTFILE=$TMP_INPUT
+          history -r
+          bind 'set show-mode-in-prompt on'
+        "
+      )
+
+      rm -f "$TMP_INPUT"
       exit 0
       ;;
     --run)
