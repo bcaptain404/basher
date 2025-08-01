@@ -92,6 +92,18 @@ while [[ $# -gt 0 ]]; do
       done
       exit 0
       ;;
+    --run)
+      shift
+      RUN_LINE="$1"
+      CMD=$(sed -n "${RUN_LINE}p" "$PINS_FILE")
+      if [[ -z "$CMD" ]]; then
+        echo "No command found on line $RUN_LINE."
+        exit 1
+      fi
+      echo "Executing: $CMD"
+      eval "$CMD"
+      exit $?
+      ;;
     --)
       shift
       CMD="$*"
