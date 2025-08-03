@@ -2,9 +2,10 @@
 
 This project will continue to be populated with BASH helper scripts as time goes on. Scripts I've written over the decades but never released. This is mostly just my own personal repo for them, but maybe someone else'll find some of them useful.
 
-For now, it's just this one script:
+# bin.sh [optional_egrep_pattern]
+Lists all executable files in $PATH, optionally filtered by a regex pattern.
 
-# pin
+# pin.sh
 
 A CLI tool to pin, recall, run, edit, and manage shell commands — your own personal favorites list for the terminal.
 
