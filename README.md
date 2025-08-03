@@ -3,7 +3,7 @@
 This project will continue to be populated with BASH helper scripts as time goes on. Scripts I've written over the decades but never released. This is mostly just my own personal repo for them, but maybe someone else'll find some of them useful.
 
 # bin.sh [optional_egrep_pattern]
-Lists all executable files in $PATH, optionally filtered by a regex pattern.
+Lists executable (or non-executable) files in $PATH (or other specified dirs), optionally filtered by a regex pattern, and optionally printing whether `which` finds them.
 
 # pin.sh
 
